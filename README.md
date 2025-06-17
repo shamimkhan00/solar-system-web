@@ -5,7 +5,6 @@
 
 A beautiful 3D interactive solar system simulation built with React Three Fiber (R3F) and Three.js. Explore our solar system with realistic planet orbits, visual trails, and interactive controls.
 
-![Solar System Screenshot](./public/screenshot.jpg)
 
 ## Features ✨
 
