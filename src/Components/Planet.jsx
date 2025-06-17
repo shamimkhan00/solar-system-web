@@ -4,7 +4,7 @@ import { TextureLoader } from 'three';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 
-export default function Planet({ distance, size, speed, color, texture, name }) {
+export default function Planet({ distance, size, speed, color, texture, name, isPaused }) {
   const planetRef = useRef();
   const orbitRef = useRef();
   const [hovered, setHover] = useState(false);
@@ -14,7 +14,7 @@ export default function Planet({ distance, size, speed, color, texture, name }) 
   // Calculate orbital period
   const orbitalPeriod = ((2 * Math.PI) / speed).toFixed(1);
 
-  // Orbit geometry with slight elevation to prevent z-fighting
+  // Orbit geometry
   const orbitGeometry = useMemo(() => {
     const curve = new THREE.EllipseCurve(
       0, 0,
@@ -26,13 +26,13 @@ export default function Planet({ distance, size, speed, color, texture, name }) 
     const points = curve.getPoints(100);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     geometry.rotateX(-Math.PI / 2);
-    geometry.translate(0, 0.1, 0); // Slightly elevate the orbit
+    geometry.translate(0, 0.1, 0);
     return geometry;
   }, [distance]);
 
-  // Animation frame with delta for smooth movement
+  // Animation frame
   useFrame(({ clock }) => {
-    if (planetRef.current) {
+    if (!isPaused && planetRef.current) {
       const elapsedTime = clock.getElapsedTime();
       const angle = elapsedTime * speed;
       planetRef.current.position.x = Math.sin(angle) * distance;
@@ -43,19 +43,19 @@ export default function Planet({ distance, size, speed, color, texture, name }) 
 
   return (
     <group>
-      {/* Orbit path - now slightly elevated */}
-      <line ref={orbitRef} geometry={orbitGeometry} material={
-        new THREE.LineDashedMaterial({
-          color: hovered ? new THREE.Color(0xffffff) : new THREE.Color(0x888888),
-          dashSize: 0.5,
-          gapSize: 0.3,
-          linewidth: 1,
-          transparent: true,
-          opacity: hovered ? 0.8 : 0.5
-        })
-      } computeLineDistances />
+      {/* Orbit path */}
+      <line ref={orbitRef} geometry={orbitGeometry}>
+        <lineDashedMaterial
+          color={hovered ? 0xffffff : 0x888888}
+          dashSize={0.5}
+          gapSize={0.3}
+          linewidth={1}
+          transparent
+          opacity={hovered ? 0.8 : 0.5}
+        />
+      </line>
       
-      {/* Planet with interaction improvements */}
+      {/* Planet */}
       <mesh 
         ref={planetRef} 
         position={[distance, 0, 0]}
@@ -73,24 +73,21 @@ export default function Planet({ distance, size, speed, color, texture, name }) 
         <sphereGeometry args={[size, 32, 32]} />
         <meshStandardMaterial 
           map={planetTexture}
-          color={hovered ? new THREE.Color(0xffffff) : color}
+          color={hovered ? 0xffffff : color}
           metalness={0.1}
           roughness={0.8}
-          emissive={hovered ? new THREE.Color(0xaaaaaa) : new THREE.Color(0x000000)}
+          emissive={hovered ? 0xaaaaaa : 0x000000}
           emissiveIntensity={hovered ? 0.5 : 0}
         />
         
-        {/* Info panel with z-index and positioning fixes */}
+        {/* Info panel */}
         {(hovered || clicked) && (
           <Html
             distanceFactor={20}
             center
-            zIndexRange={[100, 0]} // Ensure HTML stays on top
-            style={{
-              pointerEvents: 'none',
-              transformStyle: 'preserve-3d',
-            }}
-            position={[0, size + 0.5, 0]} // Position above the planet
+            zIndexRange={[100, 0]}
+            style={{ pointerEvents: 'none' }}
+            position={[0, size + 0.5, 0]}
           >
             <div className={`
               bg-black/70 text-white p-2.5 rounded-md min-w-[150px] 

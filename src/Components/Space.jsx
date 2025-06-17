@@ -4,7 +4,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import Sun from './Sun';
 import Planet from './Planet';
 
-export const Space = () => {
+export const Space = ({ isPaused }) => {
   // Planet data: [distance from sun, size, speed, color, texture]
   const planets = [
     { distance: 5, size: 0.5, speed: 0.5, color: '#a3a3a3', texture: '/textures/mercury.jpg', name: 'Mercury' },
@@ -18,7 +18,7 @@ export const Space = () => {
     <div style={{ width: '100vw', height: '100vh', background: 'black' }}>
       <Canvas
         camera={{
-          position: [0, 25, 30],
+          position: [0, 15, 40],
           fov: 45,
           near: 0.1,
           far: 1000,
@@ -28,13 +28,22 @@ export const Space = () => {
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 0, 0]} intensity={3} color="#ffaa00" />
 
-        <Sun />
+        <Sun isPaused={isPaused} />
 
-        <Stars radius={300} depth={60} count={8000} factor={6} saturation={0} fade speed={2} />
+        <Stars 
+          radius={300} 
+          depth={60} 
+          count={8000} 
+          factor={6} 
+          saturation={0} 
+          fade 
+          speed={isPaused ? 0 : 2} 
+        />
 
         {planets.map((planet, index) => (
           <Planet
             key={index}
+            isPaused={isPaused}
             distance={planet.distance}
             size={planet.size}
             speed={planet.speed}

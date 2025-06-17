@@ -3,16 +3,18 @@ import { TextureLoader } from 'three';
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-export default function Sun() {
+export default function Sun({ isPaused }) {
   const sunRef = useRef();
   const texture = useLoader(TextureLoader, '/textures/sun.jpg');
 
   useFrame(() => {
-    sunRef.current.rotation.y += 0.002;
+    if (!isPaused && sunRef.current) {
+      sunRef.current.rotation.y += 0.002;
+    }
   });
 
   return (
-    <mesh ref={sunRef}>
+    <mesh ref={sunRef} position={[0, 0, 0]}>
       <sphereGeometry args={[3, 64, 64]} />
       <meshStandardMaterial
         map={texture}
