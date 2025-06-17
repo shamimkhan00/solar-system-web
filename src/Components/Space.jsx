@@ -16,7 +16,15 @@ export const Space = () => {
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: 'black' }}>
-      <Canvas camera={{ position: [0, 25, 30], fov: 45 }}>
+      <Canvas
+        camera={{
+          position: [0, 25, 30],
+          fov: 45,
+          near: 0.1,
+          far: 1000,
+        }}
+        gl={{ antialias: true, alpha: true }}
+      >
         <ambientLight intensity={0.3} />
         <pointLight position={[0, 0, 0]} intensity={3} color="#ffaa00" />
 
