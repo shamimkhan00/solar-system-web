@@ -4,18 +4,9 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import Sun from './Sun';
 import Planet from './Planet';
 
-export const Space = ({ isPaused }) => {
-  // Planet data: [distance from sun, size, speed, color, texture]
-  const planets = [
-    { distance: 5, size: 0.5, speed: 0.5, color: '#a3a3a3', texture: '/textures/mercury.jpg', name: 'Mercury' },
-    { distance: 7, size: 0.8, speed: 0.4, color: '#e3c088', texture: '/textures/venus.jpg', name: 'Venus' },
-    { distance: 10, size: 0.7, speed: 0.3, color: '#6b93d6', texture: '/textures/earth.jpg', name: 'Earth' },
-    { distance: 13, size: 0.6, speed: 0.2, color: '#c1440e', texture: '/textures/mars.jpg', name: 'Mars' },
-    { distance: 18, size: 1.2, speed: 0.1, color: '#d8b082', texture: '/textures/jupiter.jpg', name: 'Jupiter' }
-  ];
-
+export const Space = ({ isPaused, showTrails, isDarkTheme, planets }) => {
   return (
-    <div style={{ width: '100vw', height: '100vh', background: 'black' }}>
+    <div style={{ width: '100vw', height: '100vh', background: isDarkTheme ? 'black' : '#e0f2fe' }}>
       <Canvas
         camera={{
           position: [0, 15, 40],
@@ -25,25 +16,34 @@ export const Space = ({ isPaused }) => {
         }}
         gl={{ antialias: true, alpha: true }}
       >
-        <ambientLight intensity={0.3} />
-        <pointLight position={[0, 0, 0]} intensity={3} color="#ffaa00" />
-
-        <Sun isPaused={isPaused} />
-
-        <Stars 
-          radius={300} 
-          depth={60} 
-          count={8000} 
-          factor={6} 
-          saturation={0} 
-          fade 
-          speed={isPaused ? 0 : 2} 
+        <ambientLight intensity={isDarkTheme ? 0.3 : 0.7} color={isDarkTheme ? '#ffffff' : '#f0f9ff'} />
+        
+        <pointLight 
+          position={[0, 0, 0]} 
+          intensity={3} 
+          color={isDarkTheme ? "#ffaa00" : "#ffcc00"} 
         />
+
+        <Sun isPaused={isPaused} isDarkTheme={isDarkTheme} />
+
+        {isDarkTheme && (
+          <Stars 
+            radius={300} 
+            depth={60} 
+            count={8000} 
+            factor={6} 
+            saturation={0} 
+            fade 
+            speed={isPaused ? 0 : 2} 
+          />
+        )}
 
         {planets.map((planet, index) => (
           <Planet
             key={index}
             isPaused={isPaused}
+            isDarkTheme={isDarkTheme}
+            showTrails={showTrails}
             distance={planet.distance}
             size={planet.size}
             speed={planet.speed}
@@ -61,7 +61,7 @@ export const Space = ({ isPaused }) => {
 
         <EffectComposer>
           <Bloom
-            intensity={1.8}
+            intensity={isDarkTheme ? 1.8 : 1.2}
             width={400}
             height={400}
             kernelSize={5}
